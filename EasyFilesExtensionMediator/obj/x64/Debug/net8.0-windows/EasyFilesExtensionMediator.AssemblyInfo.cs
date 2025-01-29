@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("EasyFilesExtensionMediator")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c797a635b6aa733e72868b850e8abb859f66e53d")]
 [assembly: System.Reflection.AssemblyProductAttribute("EasyFilesExtensionMediator")]
 [assembly: System.Reflection.AssemblyTitleAttribute("EasyFilesExtensionMediator")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

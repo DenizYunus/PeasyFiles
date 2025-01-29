@@ -1,0 +1,29 @@
+; PeasyFiles Installer Script
+[Setup]
+AppName=PeasyFiles
+AppVersion=1.0
+DefaultDirName={pf}\PeasyFiles
+DefaultGroupName=PeasyFiles
+OutputDir=.
+OutputBaseFilename=PeasyFilesInstaller
+Compression=lzma
+SolidCompression=yes
+PrivilegesRequired=admin
+DisableProgramGroupPage=yes
+
+[Files]
+; Add your executable and any DLLs here
+Source: "Path\To\Your\Executable\PeasyFiles.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "Path\To\Your\Executable\*.dll"; DestDir: "{app}"; Flags: ignoreversion
+
+[Icons]
+Name: "{group}\PeasyFiles"; Filename: "{app}\PeasyFiles.exe"
+Name: "{commondesktop}\PeasyFiles"; Filename: "{app}\PeasyFiles.exe"; Tasks: desktopicon
+
+[Run]
+; This will run the application after installation
+Filename: "{app}\PeasyFiles.exe"; Description: "Launch PeasyFiles"; Flags: nowait postinstall skipifsilent
+
+[Registry]
+; Optional: Register the application in the Windows registry
+Root: HKCU; Subkey: "Software\PeasyFiles"; ValueType: string; ValueName: "InstallDir"; ValueData: "{app}"; Flags: uninsdeletevalue

@@ -1,3 +1,4 @@
+﻿using System.Diagnostics;
 using System.Net;
 using System.Text;
 
@@ -11,24 +12,62 @@ namespace EasyFilesExtensionMediator
         public Form1()
         {
             InitializeComponent();
+            this.BackColor = Color.FromArgb(255, 200, 200, 200);
+            this.TransparencyKey = Color.FromArgb(255, 200, 200, 200);
             StartHttpServer();
         }
 
         private void StartHttpServer()
         {
-            _listener = new HttpListener();
-            _listener.Prefixes.Add("http://localhost:3169/");
-            _listener.Start();
-            _listenerThread = new Thread(HandleRequests);
-            _listenerThread.Start();
+            try
+            {
+                _listener = new HttpListener();
+                _listener.Prefixes.Add("http://localhost:3169/");
+                _listener.Start();
+                _listenerThread = new Thread(HandleRequests);
+                _listenerThread.Start();
+
+                statusText.Text = @"is working \(｡˃ ᵕ ˂ )/♡";
+            }
+            catch (Exception ex)
+            {
+                statusText.Text = @"is not working (╥_╥)";
+                Console.WriteLine($"Error starting HTTP server: {ex.Message}");
+            }
+
+            notifyIcon1.Visible = true;
+        }
+
+        protected override void OnMouseDown(MouseEventArgs e)
+        {
+            base.OnMouseDown(e);
+            if (e.Button == MouseButtons.Left)
+            {
+                Capture = false;
+                Message msg = Message.Create(Handle, 0XA1, new IntPtr(2), IntPtr.Zero);
+                WndProc(ref msg);
+            }
+        }
+
+        protected override void OnShown(EventArgs e)
+        {
+            base.OnShown(e);
+            Hide();
         }
 
         private void HandleRequests()
         {
             while (_listener.IsListening)
             {
-                var context = _listener.GetContext();
-                Task.Run(() => ProcessRequest(context));
+                try
+                {
+                    var context = _listener.GetContext();
+                    Task.Run(() => ProcessRequest(context));
+                }
+                catch (Exception ex)
+                {
+                    //Console.WriteLine($"Error handling request: {ex.Message}");
+                }
             }
         }
 
@@ -75,8 +114,8 @@ namespace EasyFilesExtensionMediator
 
         private void ProcessClipboardRequest(HttpListenerResponse response)
         {
-            string fileName = null;
-            byte[] fileContent = null;
+            string fileName = null!;
+            byte[] fileContent = null!;
 
             var thread = new Thread(() =>
             {
@@ -147,8 +186,7 @@ namespace EasyFilesExtensionMediator
                 var downloadsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads");
                 Console.WriteLine($"Scanning downloads folder: {downloadsPath}");
 
-                // Get files and apply size limit of 10MB
-                const long maxFileSize = 10 * 1024 * 1024; // 10MB in bytes
+                const long maxFileSize = 10 * 1024 * 1024; // 10MB limit
                 var allFiles = Directory.GetFiles(downloadsPath);
                 Console.WriteLine($"Total files found: {allFiles.Length}");
 
@@ -156,7 +194,7 @@ namespace EasyFilesExtensionMediator
                     .Select(f => new FileInfo(f))
                     .Where(f => f.Length <= maxFileSize && !f.Attributes.HasFlag(FileAttributes.Hidden))
                     .OrderByDescending(f => f.LastWriteTime)
-                    .Take(20)  // Increased to show more files
+                    .Take(20)
                     .Select(f =>
                     {
                         try
@@ -216,14 +254,29 @@ namespace EasyFilesExtensionMediator
             if (WindowState == FormWindowState.Minimized)
             {
                 notifyIcon1.Visible = true;
-                this.Hide();
+                Hide();
             }
         }
 
         private void notifyIcon1_Click(object sender, EventArgs e)
         {
-            this.Show();
+            Show();
+            WindowState = FormWindowState.Normal;
             notifyIcon1.Visible = false;
+        }
+
+        private void githubButton_Click(object sender, EventArgs e)
+        {
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = "https://github.com/DenizYunus/PeasyFiles",
+                UseShellExecute = true
+            });
+        }
+
+        private void installExtensionButton_Click(object sender, EventArgs e)
+        {
+            // Chrome Extension Link
         }
     }
 }
