@@ -1,0 +1,252 @@
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 10px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: white;
+  box-sizing: border-box;
+}
+
+#clipboard-preview {
+  margin-bottom: 10px;
+}
+
+#clipboard-content {
+  margin-top: 5px;
+}
+
+#downloads-preview {
+  margin-top: 10px;
+}
+
+button {
+  width: 100%;
+}
+
+#status-indicator {
+  padding: 4px 8px;
+  margin-bottom: 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.status-success { color: #2ea043; }
+.status-error { color: #f85149; }
+
+.section {
+  margin-bottom: 15px;
+}
+
+h2 {
+  font-size: 14px;
+  margin: 0 0 8px 0;
+  color: #24292f;
+}
+
+.content-container {
+  border: 1px solid #d0d7de;
+  border-radius: 6px;
+  padding: 8px;
+}
+
+.content-item {
+  padding: 8px;
+  border-bottom: 1px solid #d0d7de;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.content-item:hover {
+  background-color: #f6f8fa;
+}
+
+.content-item:last-child {
+  border-bottom: none;
+}
+
+.content-item.unsupported {
+  opacity: 0.7;
+  cursor: not-allowed;
+  position: relative;
+  background-color: #fafafa;
+  border: 1px solid #ffeef0;
+}
+
+.content-item.unsupported:hover {
+  background-color: #fafafa;
+}
+
+.type-warning {
+  color: #cf222e;
+  font-size: 11px;
+  margin-top: 4px;
+  padding: 4px 8px;
+  background: #ffebe9;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 129, 130, 0.4);
+  font-weight: 500;
+}
+
+#close-button {
+  position: static;
+  top: auto;
+  right: auto;
+  width: 24px;
+  height: 24px;
+  border-radius: 12px;
+  background: #f6f8fa;
+  border: 1px solid #d0d7de;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  line-height: 16px;
+  padding: 0;
+  color: #57606a;
+  z-index: 1000;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+#close-button:hover {
+  background: #f3f4f6;
+}
+
+.header-buttons {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  gap: 8px;
+  z-index: 1000;
+}
+
+#browse-button {
+  width: auto;
+  height: 24px;
+  padding: 0 8px;
+  border-radius: 12px;
+  background: #f6f8fa;
+  border: 1px solid #d0d7de;
+  cursor: pointer;
+  font-size: 12px;
+  color: #57606a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+#browse-button:hover {
+  background: #f3f4f6;
+}
+
+.filename {
+  font-size: 13px;
+  margin-bottom: 4px;
+  word-break: break-all;
+}
+
+img {
+  max-width: 100%;
+  max-height: 200px;
+  object-fit: contain;
+  margin-top: 8px;
+  border-radius: 4px;
+}
+
+.file-icon {
+  font-family: monospace;
+  font-size: 14px;
+  text-align: center;
+  margin-top: 8px;
+  font-weight: bold;
+  background: #f6f8fa;
+  padding: 4px 8px;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+.empty-message, .error-message {
+  color: #57606a;
+  font-size: 13px;
+  text-align: center;
+  padding: 16px;
+}
+
+.error-message {
+  color: #f85149;
+}
+
+.downloads-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);  /* Changed from 3 to 2 columns */
+  gap: 8px;
+  padding: 4px;  /* Reduced padding */
+}
+
+.grid-item {
+  border: 1px solid #d0d7de;
+  border-radius: 6px;
+  padding: 6px;  /* Reduced padding */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  height: 100px;  /* Reduced height */
+  position: relative;
+  min-width: 0;  /* Ensure proper flex shrinking */
+}
+
+.grid-item:hover {
+  background-color: #f6f8fa;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.grid-item.unsupported {
+  opacity: 0.7;
+  cursor: not-allowed;
+  background-color: #fafafa;
+  border: 1px solid #ffeef0;
+}
+
+.grid-item .filename {
+  font-size: 10px;  /* Smaller font */
+  line-height: 1.2;
+  margin-top: 2px;
+  text-align: center;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  width: 100%;
+  word-break: break-all;
+}
+
+.grid-item .preview-container {
+  width: 100%;
+  height: 60px;  /* Reduced height */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  margin-bottom: 2px;  /* Reduced margin */
+}
+
+.grid-item img {
+  max-width: 100%;
+  max-height: 60px;  /* Reduced height */
+  object-fit: contain;
+  border-radius: 4px;
+}
+
+.grid-item .file-icon {
+  font-size: 28px;  /* Slightly smaller icon */
+  margin: 0;
+  padding: 4px;
+  white-space: nowrap;
+}
