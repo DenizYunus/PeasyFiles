@@ -1,0 +1,44 @@
+PeasyFiles - Quick File Upload Assistant
+
+Description:
+Simplify your file uploads with PeasyFiles! Access your clipboard content and recent downloads instantly when clicking any file upload button.
+
+Key Features:
+• Instant Access: Click any upload button to see your clipboard and recent downloads
+• Smart Previews: See thumbnails of images and icons for other file types
+• Clipboard Integration: Directly use copied files, images, or text
+• Recent Downloads: Quick access to your 20 most recent downloads
+• Type Filtering: Automatically shows only compatible file types for each upload field
+• Seamless Integration: Works with all major websites and file upload forms
+• Privacy First: Your files stay local, no cloud storage involved
+
+How it works:
+1. Install PeasyFiles and the companion desktop app
+2. Click any file upload button on any website
+3. Select from your clipboard content or recent downloads
+4. Done! No need to navigate through folders
+
+Perfect for:
+• Quick image uploads
+• Document attachments
+• Social media sharing
+• Email attachments
+• Forum attachments
+• Any website with file uploads
+
+Requirements:
+• PeasyFiles desktop companion app (free)
+• Windows 10/11
+
+The extension requires the free desktop companion app to function. Download it from our GitHub page.
+
+Privacy & Security:
+• All files stay on your computer
+• No data collection
+• No cloud storage
+• Open source
+
+Get started with easier file uploads today!
+
+Tags:
+file upload, clipboard manager, productivity, download manager, file picker, upload assistant
