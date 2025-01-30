@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="docs/images/logo.png" alt="PeasyFiles Logo" width="200"/>
+  <img src="PeasyFilesChromeExtension/icons/icon256.png" alt="PeasyFiles Logo" width="200"/>
   <h1>PeasyFiles</h1>
   <p>A seamless bridge between your clipboard, downloads, and file inputs!</p>
 </div>
@@ -14,7 +14,7 @@
 - 🖥️ Desktop companion app for system integration
 
 <div align="center">
-  <img src="PeasyFilesChromeExtension/icons/icon256.png" alt="PeasyFiles UI Preview" width="600"/>
+  <img src="PeasyFilesChromeExtension/icons/ui-preview.png" alt="PeasyFiles UI Preview" width="600"/>
 </div>
 
 ## 🛠️ Installation
