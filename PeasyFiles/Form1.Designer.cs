@@ -45,7 +45,7 @@
             // 
             notifyIcon1.Icon = (Icon)resources.GetObject("notifyIcon1.Icon");
             notifyIcon1.Text = "Peasy Files";
-            notifyIcon1.Click += notifyIcon1_Click;
+            notifyIcon1.DoubleClick += notifyIcon1_Click;
             // 
             // statusText
             // 
@@ -128,6 +128,7 @@
             minimizeButton.TabIndex = 5;
             minimizeButton.Text = "__";
             minimizeButton.UseVisualStyleBackColor = false;
+            minimizeButton.Click += minimizeButton_Click;
             // 
             // Form1
             // 

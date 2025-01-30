@@ -103,69 +103,68 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   async function fetchDownloads() {
     try {
-      console.log('Fetching downloads...');
-      const response = await fetch('http://localhost:3169/api/downloads');
-      if (!response.ok) {
-        throw new Error(`Server returned ${response.status}: ${response.statusText}`);
-      }
-      
-      const files = await response.json();
-      console.log(`Total files received: ${files.length}`);
-      
-      // Store files in memory for quick access during selection
-      window.downloadedFiles = files;
-      
-      const compatibleFiles = files.filter(file => {
-        const isAllowed = isFileTypeAllowed(file.FileName);
-        console.log(`Checking file: ${file.FileName} - Allowed: ${isAllowed}`);
-        return isAllowed;
-      });
-      
-      if (compatibleFiles.length > 0) {
-        downloadsPreview.innerHTML = `<div class="downloads-grid">
-          ${compatibleFiles.map(file => {
-            const isImage = file.FileName.toLowerCase().match(/\.(png|jpg|jpeg|gif|webp|bmp)$/);
-            return `
-              <div class="grid-item" data-filename="${file.FileName}">
-                <div class="preview-container">
-                  ${isImage ? 
-                    `<img src="data:image/png;base64,${file.FileContent}" alt="${file.FileName}" />` :
-                    `<div class="file-icon">${getFileIcon(file.FileName)}</div>`
-                  }
-                </div>
-                <div class="filename">${file.FileName}</div>
-              </div>
-            `;
-          }).join('')}
-        </div>`;
-
-        // Add click handler for grid items
-        document.querySelectorAll('.grid-item').forEach(item => {
-          item.addEventListener('click', async () => {
-            try {
-              const fileName = item.dataset.filename;
-              // Use stored files instead of fetching again
-              const selectedFile = window.downloadedFiles.find(f => f.FileName === fileName);
-              
-              if (selectedFile && isFileTypeAllowed(selectedFile.FileName)) {
-                console.log('Selected file:', selectedFile.FileName);
-                await handleFileSelection(selectedFile);
-                console.log('File selection handled, closing popup');
-                window.parent.postMessage({ type: 'closePopup' }, '*');
-              }
-            } catch (error) {
-              console.error('Error handling grid item selection:', error);
-            }
-          });
-        });
-      } else {
-        downloadsPreview.innerHTML = '<div class="empty-message">No compatible files found among ' + files.length + ' downloads</div>';
-      }
+        downloadsPreview.innerHTML = '<div class="loading">Loading recent files...</div>';
+        
+        const response = await fetch('http://localhost:3169/api/downloads/list');
+        if (!response.ok) throw new Error(`Server returned ${response.status}`);
+        
+        const files = await response.json();
+        window.downloadedFiles = files; // Store metadata in memory
+        
+        const compatibleFiles = files.filter(file => isFileTypeAllowed(file.FileName));
+        
+        if (compatibleFiles.length > 0) {
+            const fragment = document.createDocumentFragment();
+            const gridDiv = document.createElement('div');
+            gridDiv.className = 'downloads-grid';
+            
+            compatibleFiles.forEach(file => {
+                const gridItem = document.createElement('div');
+                gridItem.className = 'grid-item';
+                gridItem.dataset.filename = file.FileName;
+                
+                gridItem.innerHTML = `
+                    <div class="preview-container">
+                        ${file.IsImage ? 
+                            `<img src="data:image/jpeg;base64,${file.Thumbnail}" alt="${file.FileName}" />` :
+                            `<div class="file-icon">${getFileIcon(file.FileName)}</div>`
+                        }
+                    </div>
+                    <div class="filename">${file.FileName}</div>
+                `;
+                
+                gridItem.addEventListener('click', async () => {
+                    try {
+                        if (isFileTypeAllowed(file.FileName)) {
+                            // Fetch full content only when selected
+                            const contentResponse = await fetch(`http://localhost:3169/api/downloads/content?filename=${encodeURIComponent(file.FileName)}`);
+                            if (!contentResponse.ok) throw new Error('Failed to fetch file content');
+                            
+                            const fileData = await contentResponse.json();
+                            await handleFileSelection(fileData);
+                            window.parent.postMessage({ type: 'closePopup' }, '*');
+                        }
+                    } catch (error) {
+                        console.error('Error handling selection:', error);
+                    }
+                });
+                
+                gridDiv.appendChild(gridItem);
+            });
+            
+            fragment.appendChild(gridDiv);
+            downloadsPreview.innerHTML = '';
+            downloadsPreview.appendChild(fragment);
+        } else {
+            downloadsPreview.innerHTML = `<div class="empty-message">No compatible files found</div>`;
+        }
     } catch (error) {
-      console.error('Error fetching downloads:', error);
-      downloadsPreview.innerHTML = `<div class="error-message">Could not fetch downloads: ${error.message}</div>`;
+        console.error('Error fetching downloads:', error);
+        downloadsPreview.innerHTML = `<div class="error-message">Could not fetch downloads: ${error.message}</div>`;
     }
-  }
+}
+
+// ...rest of existing code...
 
   function handleFileSelection(fileData) {
     return new Promise((resolve, reject) => {
