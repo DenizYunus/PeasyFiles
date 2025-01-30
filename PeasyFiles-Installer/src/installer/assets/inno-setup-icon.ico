@@ -1,5 +1,0 @@
-   PeasyFilesInstaller
-   ├── PeasyFiles
-   │   ├── EasyFilesExtensionMediator.exe
-   │   ├── (other DLLs and files)
-   └── PeasyFiles.iss

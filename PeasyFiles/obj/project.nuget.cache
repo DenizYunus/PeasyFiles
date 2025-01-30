@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "dgSpecHash": "PTI5VOOTQXCpI9hn5k9EA8sqDPwYmgSCugLIIKZ7TaPV6V1zFDosSCRVcLgVNbTCpy7eFopJyW2/txoF8eUOhQ==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\deniz\\source\\repos\\PeasyFiles\\PeasyFiles\\PeasyFiles.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\deniz\\.nuget\\packages\\embedio\\3.5.2\\embedio.3.5.2.nupkg.sha512",
+    "C:\\Users\\deniz\\.nuget\\packages\\system.valuetuple\\4.5.0\\system.valuetuple.4.5.0.nupkg.sha512",
+    "C:\\Users\\deniz\\.nuget\\packages\\unosquare.swan.lite\\3.1.0\\unosquare.swan.lite.3.1.0.nupkg.sha512"
+  ],
+  "logs": []
+}
