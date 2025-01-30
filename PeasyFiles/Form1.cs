@@ -321,7 +321,7 @@ namespace PeasyFiles
                     .GetFiles()
                     .Where(f => !f.Attributes.HasFlag(FileAttributes.Hidden) && f.Length <= maxFileSize)
                     .OrderByDescending(f => f.LastWriteTime)
-                    .Take(maxItems)
+                    .AsEnumerable() // Move Take() after the file type check
                     .Select(f => new
                     {
                         FileName = f.Name,
@@ -339,6 +339,8 @@ namespace PeasyFiles
                             _ => null
                         }
                     })
+                    .Where(f => !string.IsNullOrEmpty(f.Thumbnail)) // Only include successful thumbnails
+                    .Take(maxItems) // Take maxItems AFTER filtering
                     .ToList();
 
                 response.ContentType = "application/json";

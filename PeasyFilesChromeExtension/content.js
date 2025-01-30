@@ -37,24 +37,61 @@ styleSheet.textContent = `
 `;
 document.head.appendChild(styleSheet);
 
+function calculateOptimalPosition(event) {
+    const POPUP_WIDTH = 350;
+    const POPUP_HEIGHT = 400;
+    const PADDING = 10;
+    
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+    const scrollX = window.scrollX;
+    const scrollY = window.scrollY;
+
+    // Start with mouse position
+    let left = event.clientX + scrollX;
+    let top = event.clientY + scrollY;
+
+    // If popup would go off the right edge, position it to the left of the cursor
+    if (left + POPUP_WIDTH + PADDING > viewportWidth + scrollX) {
+        left = left - POPUP_WIDTH - PADDING;
+    } else {
+        left = left + PADDING;
+    }
+
+    // If popup would go off the bottom edge, position it above the cursor
+    if (top + POPUP_HEIGHT + PADDING > viewportHeight + scrollY) {
+        top = top - POPUP_HEIGHT - PADDING;
+    } else {
+        top = top + PADDING;
+    }
+
+    // Ensure minimum padding from viewport edges
+    left = Math.max(scrollX + PADDING, Math.min(left, scrollX + viewportWidth - POPUP_WIDTH - PADDING));
+    top = Math.max(scrollY + PADDING, Math.min(top, scrollY + viewportHeight - POPUP_HEIGHT - PADDING));
+
+    return { left, top };
+}
+
 function createPopupContainer(position) {
-    // Remove existing popup if any
     if (popupContainer) {
         popupContainer.classList.add('closing');
         setTimeout(() => {
-            document.body.removeChild(popupContainer);
-            createNewPopup();
+            if (popupContainer?.parentNode) {
+                document.body.removeChild(popupContainer);
+            }
+            createNewPopup(position);
         }, 200);
     } else {
-        createNewPopup();
+        createNewPopup(position);
     }
 
-    function createNewPopup() {
+    function createNewPopup(position) {
         popupContainer = document.createElement('div');
         popupContainer.id = 'easyfiles-popup';
         popupContainer.classList.add('fade-enter');
+        
         popupContainer.style.cssText = `
-            position: absolute;
+            position: fixed;
             z-index: 999999;
             width: 350px;
             height: 400px;
@@ -62,25 +99,10 @@ function createPopupContainer(position) {
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             border-radius: 8px;
             overflow: hidden;
+            left: ${position.left}px;
+            top: ${position.top}px;
         `;
 
-        // Calculate position
-        const { x, y, width, height } = position;
-        let left = x + width + 5;
-        let top = y;
-
-        // Adjust if would go off-screen
-        if (left + 350 > window.innerWidth) {
-            left = x - 350 - 5;
-        }
-        if (top + 400 > window.innerHeight) {
-            top = window.innerHeight - 410;
-        }
-
-        popupContainer.style.left = `${Math.max(10, left)}px`;
-        popupContainer.style.top = `${Math.max(10, top)}px`;
-
-        // Create and add iframe
         const iframe = document.createElement('iframe');
         iframe.src = chrome.runtime.getURL('popup.html');
         iframe.style.cssText = `
@@ -89,10 +111,9 @@ function createPopupContainer(position) {
             border: none;
             border-radius: 8px;
         `;
+        
         popupContainer.appendChild(iframe);
         document.body.appendChild(popupContainer);
-
-        // Close popup when clicking outside
         document.addEventListener('click', handleOutsideClick);
     }
 }
@@ -123,9 +144,13 @@ document.removeEventListener('click', handleFileInputClick, true);
 document.addEventListener('click', handleUploadTrigger, true);
 
 function handleUploadTrigger(e) {
+    // Store the original event coordinates
+    const clickX = e.clientX || 0;
+    const clickY = e.clientY || 0;
+    
     // Direct file inputs - always handle these
     if (e.target.type === 'file') {
-        handleFileInput(e.target, e);
+        handleFileInput(e.target, e, { x: clickX, y: clickY });
         return;
     }
 
@@ -150,7 +175,7 @@ function handleUploadTrigger(e) {
     let fileInput = findAssociatedFileInput(triggerElement);
     
     if (fileInput) {
-        handleFileInput(fileInput, e);
+        handleFileInput(fileInput, e, { x: clickX, y: clickY });
     }
 }
 
@@ -217,19 +242,19 @@ function findAssociatedFileInput(element) {
     );
 }
 
-function handleFileInput(input, event) {
+function handleFileInput(input, event, clickCoords) {
     event.preventDefault();
     event.stopPropagation();
     
     lastClickedInput = input;
-    
-    const rect = event.target.getBoundingClientRect();
-    createPopupContainer({
-        x: rect.left + window.scrollX,
-        y: rect.top + window.scrollY,
-        width: rect.width,
-        height: rect.height
+
+    // Use click coordinates if available, otherwise fallback to element position
+    const position = calculateOptimalPosition({
+        clientX: clickCoords?.x ?? event.clientX ?? 0,
+        clientY: clickCoords?.y ?? event.clientY ?? 0
     });
+
+    createPopupContainer(position);
 
     setTimeout(() => {
         chrome.runtime.sendMessage({
@@ -257,6 +282,7 @@ function handleDragOver(e) {
     }
 }
 
+// Update handleDrop to also use mouse coordinates
 function handleDrop(e) {
     const dropZone = e.target.closest([
         '[class*="drop"]',
@@ -269,7 +295,7 @@ function handleDrop(e) {
         e.preventDefault();
         const fileInput = findAssociatedFileInput(dropZone);
         if (fileInput) {
-            handleFileInput(fileInput, e);
+            handleFileInput(fileInput, e, { x: e.clientX, y: e.clientY });
         }
     }
 }
@@ -477,3 +503,12 @@ function getMimeType(filename) {
     };
     return mimeTypes[ext] || 'application/octet-stream';
 }
+
+// For iframes and cross-origin content
+document.addEventListener('mousedown', (e) => {
+    // Store the last known good coordinates
+    window.lastKnownGoodClick = {
+        x: e.clientX,
+        y: e.clientY
+    };
+}, true);
