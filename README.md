@@ -20,7 +20,7 @@
 ## 🛠️ Installation
 
 1. **Desktop App**
-   - Download the latest release from [GitHub Releases](https://github.com/denizariyan/PeasyFiles/releases)
+   - Download the latest release from the [Releases Page](https://github.com/DenizYunus/PeasyFiles/releases/download/Release/PeasyFilesInstaller.exe)
    - Run the installer and follow the setup instructions
    - The app will start automatically and run in the system tray
 
