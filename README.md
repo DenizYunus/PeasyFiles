@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="PeasyFilesChromeExtension/icons/icon256.png" alt="PeasyFiles Logo" width="200"/>
+  <img src="PeasyFilesChromeExtension/icons/icon-transparent-256.png" alt="PeasyFiles Logo" width="200"/>
   <h1>PeasyFiles</h1>
   <p>A seamless bridge between your clipboard, downloads, and file inputs!</p>
 </div>
@@ -82,5 +82,5 @@ If you find this project helpful, please consider:
 ---
 
 <div align="center">
-  Made with ❤️ by <a href="https://github.com/Deniz_Yunus">Deniz Yunus Göğüş</a>
+  Made with ❤️ by <a href="https://github.com/DenizYunus">Deniz Yunus Göğüş</a>
 </div>
