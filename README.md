@@ -30,6 +30,18 @@
 
 ## 🎯 How It Works
 
+### Upload Files from Clipboard
+Just copy any file and click a file input - it's that simple!
+<div align="center">
+  <img src="PeasyFilesChromeExtension/icons/upload-image.gif" alt="Clipboard Upload Demo" width="600"/>
+</div>
+
+### Quick Access to Recent Downloads
+Browse and upload your recent downloads directly from any file input
+<div align="center">
+  <img src="PeasyFilesChromeExtension/icons/upload-file.gif" alt="Downloads Upload Demo" width="600"/>
+</div>
+
 1. Click any file input on a webpage
 2. PeasyFiles popup appears with your options:
    - Recently copied files from clipboard
