@@ -17,27 +17,39 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 
   function isFileTypeAllowed(filename) {
-    if (!requiredFileType) {
-      console.log('No file type requirements set');
-      return true;
-    }
+    if (!requiredFileType) return true;
     
     const fileExt = '.' + filename.split('.').pop().toLowerCase();
-    // console.log('Checking file:', { fileExt, requiredFileType });
+    const mimeType = getMimeType(filename);
     
     const allowedTypes = requiredFileType.split(',')
-      .map(t => t.trim().toLowerCase())
-      .filter(t => t.startsWith('.'));
-      
-    const isAllowed = allowedTypes.includes(fileExt);
-    // console.log('File type check:', {
-    //   fileExt,
-    //   allowedTypes,
-    //   isAllowed,
-    //   requiredFileType
-    // });
-    return isAllowed;
-  }
+        .map(t => t.trim().toLowerCase());
+    
+    // Check both file extensions and MIME types
+    return allowedTypes.some(type => {
+        if (type.startsWith('.')) {
+            // Extension check (e.g., .jpg)
+            return type === fileExt;
+        } else {
+            // MIME type check (e.g., image/jpeg)
+            return type === mimeType;
+        }
+    });
+}
+
+  function getMimeType(filename) {
+    const ext = filename.split('.').pop().toLowerCase();
+    const mimeTypes = {
+        'jpg': 'image/jpeg',
+        'jpeg': 'image/jpeg',
+        'png': 'image/png',
+        'gif': 'image/gif',
+        'webp': 'image/webp',
+        'bmp': 'image/bmp',
+        // ...rest of existing mime types...
+    };
+    return mimeTypes[ext] || 'application/octet-stream';
+}
 
   function getFileTypeWarning(filename) {
     if (!requiredFileType) return '';
@@ -51,35 +63,41 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   async function fetchClipboard() {
     try {
-      const response = await fetch('http://localhost:3169/api/clipboard');
-      if (!response.ok) throw new Error('Server error');
-      
-      const data = await response.json();
-      if (data.FileName) {
-        const isAllowed = isFileTypeAllowed(data.FileName);
-        const isImage = data.FileName.toLowerCase().match(/\.(png|jpg|jpeg|gif|webp|bmp|tif|tiff|heic)$/);
-        const warning = getFileTypeWarning(data.FileName);
-        
-        console.log('File check:', {
-          filename: data.FileName,
-          isAllowed,
-          requiredType: requiredFileType
-        });
-
         clipboardContent.innerHTML = `
-          <div class="content-item ${isAllowed ? '' : 'unsupported'}">
-            <div class="filename">${data.FileName}</div>
-            ${!isAllowed ? `<div class="type-warning">${warning}</div>` : ''}
-            ${isImage ? 
-              `<img src="data:image/png;base64,${data.FileContent}" alt="Preview" />` : 
-              `<div class="file-icon">${getFileIcon(data.FileName)}</div>`}
-          </div>`;
-      } else {
-        clipboardContent.innerHTML = '<div class="empty-message">No clipboard content</div>';
+            <div class="content-item loading">
+                <div class="preview-container"></div>
+            </div>
+        `;
+        
+        const response = await fetch('http://localhost:3169/api/clipboard');
+        if (!response.ok) throw new Error('Server error');
+        
+        const data = await response.json();
+        if (data.FileName) {
+          const isAllowed = isFileTypeAllowed(data.FileName);
+          const isImage = data.FileName.toLowerCase().match(/\.(png|jpg|jpeg|gif|webp|bmp|tif|tiff|heic)$/);
+          const warning = getFileTypeWarning(data.FileName);
+          
+          console.log('File check:', {
+            filename: data.FileName,
+            isAllowed,
+            requiredType: requiredFileType
+          });
+
+          clipboardContent.innerHTML = `
+            <div class="content-item ${isAllowed ? '' : 'unsupported'}">
+              <div class="filename">${data.FileName}</div>
+              ${!isAllowed ? `<div class="type-warning">${warning}</div>` : ''}
+              ${isImage ? 
+                `<img src="data:image/png;base64,${data.FileContent}" alt="Preview" />` : 
+                `<div class="file-icon">${getFileIcon(data.FileName)}</div>`}
+            </div>`;
+        } else {
+          clipboardContent.innerHTML = '<div class="empty-message">No clipboard content</div>';
+        }
+      } catch (error) {
+        clipboardContent.innerHTML = '<div class="error-message">Could not fetch clipboard content</div>';
       }
-    } catch (error) {
-      clipboardContent.innerHTML = '<div class="error-message">Could not fetch clipboard content</div>';
-    }
   }
 
   function getFileIcon(filename) {
@@ -103,7 +121,17 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   async function fetchDownloads() {
     try {
-        downloadsPreview.innerHTML = '<div class="loading">Loading recent files...</div>';
+        // Show loading skeletons
+        downloadsPreview.innerHTML = `
+            <div class="downloads-grid">
+                ${Array(6).fill(0).map(() => `
+                    <div class="grid-item loading">
+                        <div class="preview-container"></div>
+                        <div class="filename"></div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
         
         const response = await fetch('http://localhost:3169/api/downloads/list');
         if (!response.ok) throw new Error(`Server returned ${response.status}`);
@@ -240,7 +268,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     statusIndicator.textContent = '[X] Not Connected, Install & Start Desktop App';
     statusIndicator.style.cursor = 'pointer';
     statusIndicator.addEventListener('click', () => {
-      window.open('https://github.com/denizariyan/EasyFiles/releases/latest', '_blank');
+      window.open('https://github.com/DenizYunus/PeasyFiles/releases/latest', '_blank');
     });
     statusIndicator.className = 'status-error';
   }

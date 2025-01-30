@@ -37,6 +37,16 @@ button {
 
 .section {
   margin-bottom: 15px;
+  animation: slideIn 0.3s ease-out;
+  animation-fill-mode: backwards;
+}
+
+.section:nth-child(2) {
+  animation-delay: 0.1s;
+}
+
+.section:nth-child(3) {
+  animation-delay: 0.2s;
 }
 
 h2 {
@@ -195,7 +205,7 @@ img {
   flex-direction: column;
   align-items: center;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   height: 100px;  /* Reduced height */
   position: relative;
   min-width: 0;  /* Ensure proper flex shrinking */
@@ -249,4 +259,78 @@ img {
   margin: 0;
   padding: 4px;
   white-space: nowrap;
+}
+
+/* Add loading animation */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.loading {
+  padding: 20px;
+  text-align: center;
+  color: #57606a;
+  font-size: 13px;
+  position: relative;
+}
+
+.loading::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, 
+    transparent,
+    rgba(0, 0, 0, 0.05),
+    transparent
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* Add fade animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(10px); }
+}
+
+.fade-enter {
+  animation: fadeIn 0.2s ease-out forwards;
+}
+
+.fade-exit {
+  animation: fadeOut 0.2s ease-out forwards;
+}
+
+/* Add loading skeleton for grid items */
+.grid-item.loading {
+  background: linear-gradient(90deg,
+    #f6f8fa 25%,
+    #eaecef 50%,
+    #f6f8fa 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* Smooth transitions for hover effects */
+.content-item {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Add content entrance animation */
+@keyframes slideIn {
+  from {
+    transform: translateY(10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
