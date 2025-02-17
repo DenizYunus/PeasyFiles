@@ -88,6 +88,7 @@
             // installExtensionButton
             // 
             installExtensionButton.BackColor = Color.Transparent;
+            installExtensionButton.Cursor = Cursors.Hand;
             installExtensionButton.FlatAppearance.BorderSize = 0;
             installExtensionButton.FlatAppearance.MouseDownBackColor = Color.Transparent;
             installExtensionButton.FlatAppearance.MouseOverBackColor = Color.Transparent;

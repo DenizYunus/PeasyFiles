@@ -9,9 +9,8 @@ namespace PeasyFiles
 {
     public partial class Form1 : Form
     {
-        private const string EXTENSION_ID = "neopmcfedjmjlliompjgadnadeceepfo";
+        private const string EXTENSION_ID = "edlblepjgkmphmbhknndfmdnillichef";
         private const string EXTENSION_VERSION = "1.0";
-        private readonly string EXTENSION_PATH;
         private HttpListener _listener;
         private Thread _listenerThread;
         private bool hideOnStartup = false;
@@ -24,8 +23,6 @@ namespace PeasyFiles
             InitializeContextMenus();
             this.BackColor = Color.FromArgb(255, 200, 200, 200);
             this.TransparencyKey = Color.FromArgb(255, 200, 200, 200);
-
-            EXTENSION_PATH = Path.Combine(Application.StartupPath, "PeasyFilesChromeExtension.crx");
 
             LoadSettings();
             CheckAndInstallExtensions();
@@ -69,7 +66,7 @@ namespace PeasyFiles
             try
             {
                 // Only install for Chrome
-                InstallForBrowser("Chrome", @"SOFTWARE\WOW6432Node\Google\Chrome\Extensions\");
+                InstallForBrowser("Chrome", @"SOFTWARE\Google\Chrome\Extensions\");
             }
             catch (Exception ex)
             {
@@ -82,12 +79,13 @@ namespace PeasyFiles
         {
             try
             {
-                var registryPath = registryBasePath + EXTENSION_ID;
-                var key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(registryPath);
+                string registryPath32 = "Software\\Google\\Chrome\\Extensions\\" + EXTENSION_ID;
+                string registryPath64 = "Software\\Wow6432Node\\Google\\Chrome\\Extensions\\" + EXTENSION_ID;
 
-                if (key == null || key.GetValue("version")?.ToString() != EXTENSION_VERSION)
+                if (!IsExtensionInstalled(registryPath32) && !IsExtensionInstalled(registryPath64))
                 {
-                    InstallExtension(browserName, registryPath);
+                    InstallExtension(browserName, registryPath32);
+                    InstallExtension(browserName, registryPath64);
                 }
                 else
                 {
@@ -100,49 +98,54 @@ namespace PeasyFiles
             }
         }
 
+        private bool IsExtensionInstalled(string registryPath)
+        {
+            try
+            {
+                using (var key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(registryPath))
+                {
+                    return key != null && key.GetValue("update_url")?.ToString() == "https://clients2.google.com/service/update2/crx";
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error checking registry key {registryPath}: {ex.Message}");
+            }
+            return false;
+        }
+
         private void InstallExtension(string browserName, string registryPath)
         {
             try
             {
-                // Ensure the CRX file exists
-                if (!File.Exists(EXTENSION_PATH))
+                using (var baseKey = Microsoft.Win32.Registry.LocalMachine.OpenSubKey("SOFTWARE", true))
                 {
-                    throw new FileNotFoundException("Extension file not found", EXTENSION_PATH);
+                    if (baseKey == null)
+                        throw new Exception("Failed to open SOFTWARE registry key.");
                 }
 
-                using (var key = Microsoft.Win32.Registry.LocalMachine.CreateSubKey(registryPath))
+                using (var key = Microsoft.Win32.Registry.LocalMachine.CreateSubKey(registryPath, true))
                 {
-                    key.SetValue("path", EXTENSION_PATH, Microsoft.Win32.RegistryValueKind.String);
-                    key.SetValue("version", EXTENSION_VERSION, Microsoft.Win32.RegistryValueKind.String);
+                    if (key == null)
+                        throw new Exception("Failed to create registry key.");
+
+                    key.SetValue("update_url", "https://clients2.google.com/service/update2/crx", Microsoft.Win32.RegistryValueKind.String);
                 }
 
                 Console.WriteLine($"Extension installed successfully for {browserName}");
-
-                // Prompt user to restart browser
-                Console.WriteLine(
-                    $"The PeasyFiles extension has been installed for {browserName}. Please restart {browserName} to complete the installation.",
-                    "Installation Complete"
-                    //MessageBoxButtons.OK,
-                    //MessageBoxIcon.Information
-                );
+                Console.WriteLine($"The PeasyFiles extension has been installed for {browserName}. Please restart {browserName} to complete the installation.");
+            }
+            catch (UnauthorizedAccessException)
+            {
+                Console.WriteLine("Permission denied. Please run PeasyFiles as administrator to install the extension.");
             }
             catch (Exception ex)
             {
                 errorText.Text = "Failed to install extension: " + ex.Message;
                 Console.WriteLine($"Extension installation error: {ex}");
-
-                // Prompt user to run as administrator if needed
-                if (ex is UnauthorizedAccessException)
-                {
-                    Console.WriteLine(
-                        "Please run PeasyFiles as administrator to install the extension.",
-                        "Administrator Rights Required"
-                        //MessageBoxButtons.OK,
-                        //MessageBoxIcon.Warning
-                    );
-                }
             }
         }
+
 
         private void StartHttpServer()
         {
@@ -483,7 +486,11 @@ namespace PeasyFiles
 
         private void installExtensionButton_Click(object sender, EventArgs e)
         {
-            // Chrome Extension Link
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = "https://chromewebstore.google.com/detail/peasyfiles/edlblepjgkmphmbhknndfmdnillichef",
+                UseShellExecute = true
+            });
         }
 
         private void closeButton_Click(object sender, EventArgs e)

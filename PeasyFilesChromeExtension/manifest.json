@@ -5,8 +5,7 @@
   "description": "Quick access to clipboard content and recent downloads",
   "permissions": [
     "tabs",
-    "activeTab",
-    "scripting"
+    "activeTab"
   ],
   "host_permissions": ["http://localhost:3169/*"],
   "content_scripts": [
