@@ -17,12 +17,6 @@ Required to:
 - Inject necessary content scripts for file input detection
 - Maintain security by limiting access to the active tab only during upload interactions
 
-### `"scripting"` Permission
-Required to:
-- Detect and intercept file input clicks
-- Modify the file input's value with the selected file
-- Trigger necessary change events for form compatibility
-
 ### Host Permission: `"http://localhost:3169/*"`
 Required to:
 - Communicate with the local desktop companion app
