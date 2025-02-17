@@ -89,7 +89,7 @@ If you find this project helpful, please consider:
 
 - [Project Homepage](https://github.com/DenizYunus/PeasyFiles)
 - [Issue Tracker](https://github.com/DenizYunus/PeasyFiles/issues)
-- [Chrome Web Store (Won't Give 5$ Install From Here lol)](https://github.com/DenizYunus/PeasyFiles/releases/download/Release/PeasyFilesChromeExtension.crx)
+- [Chrome Web Store](https://chromewebstore.google.com/detail/peasyfiles/edlblepjgkmphmbhknndfmdnillichef)
 
 ---
 
